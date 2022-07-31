@@ -1,0 +1,33 @@
+package services
+
+import (
+	"github.com/uretgec/mydb/storage/interfaces"
+    {{range $itemKey, $itemData := . -}}
+    "github.com/fiure-cms/fiure-storage/stores/{{$itemData.DbName}}"
+    {{end}}
+)
+
+var Store interfaces.Storage
+
+const (
+    {{range $itemKey, $itemData := . -}}
+    {{$itemData.DbDisplayName}} = "{{$itemData.DbName}}"
+    {{end}}
+)
+
+func SetupStorage(name, path string, bucketList, indexList []string, readOnly bool) error {
+	var err error
+    {{ if gt (len .) 0 }}{{range $itemKey, $itemData := .}}{{ if eq $itemKey 0 }}
+    if name == {{$itemData.DbDisplayName}} {
+        Store, err = {{$itemData.DbName}}.NewStore(path, name, bucketList, indexList, readOnly)
+    {{else}}
+    } else if name == {{$itemData.DbDisplayName}} {
+        Store, err = {{$itemData.DbName}}.NewStore(path, name, bucketList, indexList, readOnly)
+    {{end}}
+    {{- end -}}
+    }
+    {{else}}
+    err = errors.New("no database store found!")
+    {{end}}
+	return err
+}

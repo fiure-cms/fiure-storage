@@ -4,17 +4,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/fikir-uretgeci/fiure-storage/loggers"
-	"github.com/fikir-uretgeci/fiure-storage/services"
+	"github.com/fiure-cms/fiure-storage/loggers"
+	"github.com/fiure-cms/fiure-storage/services"
 
 	"github.com/tidwall/redcon"
 )
-
-func checkCmdRequired(args [][]byte, required int) bool {
-	// args 0 dan başladığı için her zaman required verisine bir ekliyoruz.
-	required += 1
-	return len(args) >= required
-}
 
 func connAccept(conn redcon.Conn) bool {
 	loggers.Sugar.With("Client", conn.RemoteAddr()).Info("New client connection accepted")
@@ -189,7 +183,7 @@ func handlerExists(conn redcon.Conn, cmd redcon.Command) {
 	bucketName := cmd.Args[1]
 	id := cmd.Args[2]
 
-	found, err := services.Store.Exist(bucketName, id)
+	found, err := services.Store.KeyExist(bucketName, id)
 	if err != nil {
 		loggers.Sugar.With("error", err).Error("exists command error")
 		conn.WriteError(fmt.Sprintf("exists command error: %s", err.Error()))
@@ -231,7 +225,7 @@ func handlerDel(conn redcon.Conn, cmd redcon.Command) {
 	bucketName := cmd.Args[1]
 	id := cmd.Args[2]
 
-	err := services.Store.Del(bucketName, id)
+	err := services.Store.Delete(bucketName, id)
 	if err != nil {
 		loggers.Sugar.With("error", err).Error("del command error")
 		conn.WriteError(fmt.Sprintf("Del command error: %s", err.Error()))
@@ -241,8 +235,8 @@ func handlerDel(conn redcon.Conn, cmd redcon.Command) {
 	conn.WriteInt64(1)
 }
 
-// CMD: bstats bucketName
-func handlerBStats(conn redcon.Conn, cmd redcon.Command) {
+// CMD: stats bucketName
+func handlerStats(conn redcon.Conn, cmd redcon.Command) {
 	if !checkCmdRequired(cmd.Args, 1) {
 		loggers.Sugar.With("args", string(cmd.Raw)).Error("not enough required count")
 		conn.WriteError("not enough required count")
@@ -251,7 +245,7 @@ func handlerBStats(conn redcon.Conn, cmd redcon.Command) {
 
 	bucketName := cmd.Args[1]
 
-	conn.WriteInt(services.Store.BStats(bucketName))
+	conn.WriteInt(services.Store.StatsBucket(bucketName))
 }
 
 // CMD: backup path/ filename

@@ -18,7 +18,7 @@ func setupRoutes() *redcon.ServeMux {
 	mux.HandleFunc("del", handlerDel)
 	mux.HandleFunc("exists", handlerExists)
 	mux.HandleFunc("vexists", handlerValueExists)
-	mux.HandleFunc("bstats", handlerBStats)
+	mux.HandleFunc("stats", handlerStats)
 	mux.HandleFunc("backup", handlerBackup)
 	mux.HandleFunc("restore", handlerRestore)
 

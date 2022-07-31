@@ -1,0 +1,17 @@
+FROM alpine:latest
+
+LABEL service="{{.ServiceName}}"
+
+RUN mkdir -p \
+    /usr/local/{{.ServiceName}} \
+    {{range $itemKey, $itemData := .}}
+    /usr/local/data/db/live/{{$itemData.DbName}} \
+    {{end}}
+ARG ENV_FILE
+
+COPY ${ENV_FILE} /usr/local/{{.ServiceName}}/.env
+COPY --from=builder /usr/local/go/bin/{{.ServiceName}} /usr/local/{{.ServiceName}}/{{.ServiceName}}
+
+WORKDIR /usr/local/{{.ServiceName}}
+
+ENTRYPOINT [ "./{{.ServiceName}}", "--env-file", ".env" ]

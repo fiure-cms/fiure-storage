@@ -8,18 +8,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fikir-uretgeci/fiure-storage/loggers"
-	"github.com/fikir-uretgeci/fiure-storage/services"
+	"github.com/fiure-cms/fiure-storage/loggers"
+	"github.com/fiure-cms/fiure-storage/services"
 
 	"github.com/peterbourgon/ff/v3"
 	"github.com/tidwall/redcon"
 )
 
-var ServiceBuild string
-var ServiceCommitId string
+var ServiceBuild string // Build time: unix timestamp
+var ServiceCommitId string // Build Commit: shortcode of commit id
 
 var ServiceName string = "fiure-storage"
-var ServiceVersion string = "1.0.0"
+var ServiceVersion string = "0.1.0"
 
 var (
 	fs = flag.NewFlagSet(ServiceName, flag.ExitOnError)
@@ -98,5 +98,5 @@ func main() {
 	services.Store.CloseStore()
 
 	// Bye bye
-	loggers.Sugar.Info("im shutting down. See you later")
+	loggers.Sugar.Info("im shutting down. see you later")
 }
